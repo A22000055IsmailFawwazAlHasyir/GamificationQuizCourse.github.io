@@ -333,7 +333,7 @@
                 leaderboard.push(userScore);
                 localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
                 scoreElement.textContent = `${username}, kamu mendapatkan skor : ${score}`;
-                if (score <= 20) {
+                if (score <= 70) {
                     loseMusic.play();
                     document.getElementById('viewHighscore').style.display = 'none';
                     document.getElementById('claimAchievement').style.display = 'none';
