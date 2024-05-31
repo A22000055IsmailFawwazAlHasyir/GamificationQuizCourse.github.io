@@ -80,12 +80,12 @@
         userRecords.forEach(record => {
             if (record.score >= 70) {
                 badges.add('score70');
-                if (record.completionTime <= 30) {
-                    badges.add('score70_30sec');
+                if (record.completionTime <= 60) {
+                    badges.add('score70_60sec');
                 }
             }
-            if (record.score >= 80 && record.completionTime <= 5) {
-                badges.add('score80_5sec');
+            if (record.score >= 80) {
+                badges.add('score80');
             }
         });
 
