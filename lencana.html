@@ -75,22 +75,17 @@
         const username = localStorage.getItem('username') || 'User';
         const userRecords = leaderboard.filter(record => record.username === username);
         const badgesContainer = document.getElementById('badgesContainer');
-        const badges = [];
+        const badges = new Set();
 
         userRecords.forEach(record => {
-            if (record.score === 70) {
-                if (!badges.includes('score70')) {
-                    badges.push('score70');
+            if (record.score >= 70) {
+                badges.add('score70');
+                if (record.completionTime <= 30) {
+                    badges.add('score70_30sec');
                 }
-                if (record.completionTime <= 5) {
-                    if (!badges.includes('score70_5sec')) {
-                        badges.push('score70_5sec');
-                    }
-                } else if (record.completionTime <= 5) {
-                    if (!badges.includes('score80_5sec')) {
-                        badges.push('score80_5sec');
-                    }
-                }
+            }
+            if (record.score >= 80 && record.completionTime <= 5) {
+                badges.add('score80_5sec');
             }
         });
 
@@ -100,16 +95,16 @@
                 case 'score70':
                     badgeElement = `
                         <div class="badge">
-                            <img src="gambar/1.jpg">
+                            <img src="gambar/1.jpg" alt="Score 70 Badge">
                             <p>Mendapatkan Skor 70 Poin</p>
                         </div>
                     `;
                     break;
-                case 'score70_5sec':
+                case 'score70_30sec':
                     badgeElement = `
                         <div class="badge">
-                            <img src="gambar/2.jpg" alt="Score 70 in 5 seconds Badge">
-                            <p>Mendapatkan Skor 70 Poin Dalam 5 Detik</p>
+                            <img src="gambar/2.jpg" alt="Score 70 in 30 seconds Badge">
+                            <p>Mendapatkan Skor 70 Poin Dalam 30 Detik</p>
                         </div>
                     `;
                     break;
