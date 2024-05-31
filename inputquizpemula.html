@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Pembuatan Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"], textarea, select {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #savedQuestions {
+            margin-top: 20px;
+        }
+
+        .quiz-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .quiz-item h3 {
+            margin-top: 0;
+        }
+
+        .quiz-item img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        button.edit, button.delete {
+            background-color: #007bff;
+            margin-right: 5px;
+        }
+
+        button.delete {
+            background-color: #dc3545;
+        }
+
+        button.edit:hover {
+            background-color: #0056b3;
+        }
+
+        button.delete:hover {
+            background-color: #c82333;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Input Quiz</h1>
+    <form id="quizForm">
+        <label for="level">Level Quiz</label>
+        <select id="level" name="level" required disabled>
+            <option value="pemula">Pemula</option>
+        </select>
+        
+        <label for="points">Point</label>
+        <input type="text" id="points" name="points" value="10" readonly>
+        
+        <label for="time">Waktu (detik)</label>
+        <input type="text" id="time" name="time" value="15" readonly>
+        
+        <label for="questionNumber">Nomor Pertanyaan</label>
+        <select id="questionNumber" name="questionNumber" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+        </select>
+        
+        <label for="questionText">Pertanyaan</label>
+        <textarea id="questionText" name="questionText" rows="4" required></textarea>
+        
+        <label for="questionImage">Sisipkan Gambar (opsional)</label>
+        <input type="file" id="questionImage" name="questionImage" accept="image/*">
+        
+        <label for="optionA">Pilihan A</label>
+        <input type="text" id="optionA" name="optionA" required>
+        
+        <label for="optionB">Pilihan B</label>
+        <input type="text" id="optionB" name="optionB" required>
+        
+        <label for="optionC">Pilihan C</label>
+        <input type="text" id="optionC" name="optionC" required>
+        
+        <label for="optionD">Pilihan D</label>
+        <input type="text" id="optionD" name="optionD" required>
+        
+        <label for="correctOption">Pilihan Benar</label>
+        <select id="correctOption" name="correctOption" required>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+        </select>
+
+        <div class="button-container">
+            <button type="button" onclick="saveQuestion()">Save Pertanyaan</button>
+            <button type="button" onclick="lockQuestions()">Kunci Pertanyaan</button>
+        </div>
+    </form>
+    
+    <div id="savedQuestions">
+        <h2>List Pertanyaan</h2>
+    </div>
+</div>
+
+<script>
+    const savedQuestions = JSON.parse(localStorage.getItem('savedQuestions')) || [];
+    const usedQuestionNumbers = new Set(savedQuestions.map(question => question.questionNumber));
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderSavedQuestions();
+    });
+
+    function saveQuestion() {
+        const questionNumber = document.getElementById('questionNumber').value;
+        const questionText = document.getElementById('questionText').value;
+        const questionImage = document.getElementById('questionImage').files[0];
+        const optionA = document.getElementById('optionA').value;
+        const optionB = document.getElementById('optionB').value;
+        const optionC = document.getElementById('optionC').value;
+        const optionD = document.getElementById('optionD').value;
+        const correctOption = document.getElementById('correctOption').value;
+
+        if (usedQuestionNumbers.has(questionNumber)) {
+            alert('Nomor sudah digunakan, pilih nomor lain.');
+            return;
+        }
+
+        if (!questionText || !optionA || !optionB || !optionC || !optionD || !correctOption) {
+            alert('Semua kolom kosong harus diisi.');
+            return;
+        }
+
+        let imageUrl = '';
+        if (questionImage) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imageUrl = e.target.result;
+                saveToLocalStorage(questionNumber, questionText, imageUrl, optionA, optionB, optionC, optionD, correctOption);
+            };
+            reader.readAsDataURL(questionImage);
+        } else {
+            saveToLocalStorage(questionNumber, questionText, imageUrl, optionA, optionB, optionC, optionD, correctOption);
+        }
+
+        document.getElementById('quizForm').reset();
+    }
+
+    function saveToLocalStorage(questionNumber, questionText, imageUrl, optionA, optionB, optionC, optionD, correctOption) {
+        const question = {
+            questionNumber,
+            questionText,
+            imageUrl,
+            options: { A: optionA, B: optionB, C: optionC, D: optionD },
+            correctOption
+        };
+        savedQuestions.push(question);
+        localStorage.setItem('savedQuestions', JSON.stringify(savedQuestions));
+        usedQuestionNumbers.add(questionNumber);
+        renderSavedQuestions();
+    }
+
+    function renderSavedQuestions() {
+        const savedQuestionsContainer = document.getElementById('savedQuestions');
+        savedQuestionsContainer.innerHTML = '<h2>List Pertanyaan</h2>';
+
+        savedQuestions.forEach((question, index) => {
+            const quizItem = document.createElement('div');
+            quizItem.className = 'quiz-item';
+
+            let imageHtml = '';
+            if (question.imageUrl) {
+                imageHtml = `<img src="${question.imageUrl}" alt="Question Image">`;
+            }
+
+            quizItem.innerHTML = `
+                <h3>Pertanyaan ${question.questionNumber}</h3>
+                <p>${question.questionText}</p>
+                ${imageHtml}
+                <ul>
+                    <li>A: ${question.options.A}</li>
+                    <li>B: ${question.options.B}</li>
+                    <li>C: ${question.options.C}</li>
+                    <li>D: ${question.options.D}</li>
+                </ul>
+                <p>Pilihan Benar: ${question.correctOption}</p>
+                <button class="edit" onclick="editQuestion(${index})">Edit</button>
+                <button class="delete" onclick="deleteQuestion(${index})">Hapus</button>
+            `;
+
+            savedQuestionsContainer.appendChild(quizItem);
+        });
+    }
+
+    function editQuestion(index) {
+        const question = savedQuestions[index];
+
+        document.getElementById('questionNumber').value = question.questionNumber;
+        document.getElementById('questionText').value = question.questionText;
+        document.getElementById('optionA').value = question.options.A;
+        document.getElementById('optionB').value = question.options.B;
+        document.getElementById('optionC').value = question.options.C;
+        document.getElementById('optionD').value = question.options.D;
+        document.getElementById('correctOption').value = question.correctOption;
+
+        deleteQuestion(index);
+    }
+
+    function deleteQuestion(index) {
+        const questionNumber = savedQuestions[index].questionNumber;
+        usedQuestionNumbers.delete(questionNumber);
+        savedQuestions.splice(index, 1);
+        localStorage.setItem('savedQuestions', JSON.stringify(savedQuestions));
+        renderSavedQuestions();
+    }
+
+    function lockQuestions() {
+        if (savedQuestions.length < 10) {
+            alert('Kamu harus membuat 10 pertanyaan terlebih dahulu sebelum dikunci.');
+            return;
+        }
+        window.location.href = 'instruktur.html';  
+    }
+</script>
+</body>
+</html>

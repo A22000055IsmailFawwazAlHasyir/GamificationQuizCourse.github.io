@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klasemen Skor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .gold {
+            background-color: gold;
+        }
+
+        .silver {
+            background-color: silver;
+        }
+
+        .bronze {
+            background-color: #cd7f32;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .button-container button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        .button-container button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Klasemen Skor</h1>
+        <table id="leaderboardTable">
+            <thead>
+                <tr>
+                    <th>Peringkat</th>
+                    <th>Nama Peserta</th>
+                    <th>Skor</th>
+                    <th>Waktu penyelesaian (detik)</th>
+                </tr>
+            </thead>
+            <tbody>
+             
+            </tbody>
+        </table>
+        <div class="button-container">
+            <button onclick="goBack()">Level Selanjutnya</button>
+        </div>
+    </div>
+    <script>
+        const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+        const leaderboardTable = document.getElementById('leaderboardTable').getElementsByTagName('tbody')[0];
+
+        leaderboard.sort((a, b) => b.score - a.score || a.completionTime - b.completionTime);
+
+        leaderboard.forEach((user, index) => {
+            const row = leaderboardTable.insertRow();
+            const rankCell = row.insertCell(0);
+            const usernameCell = row.insertCell(1);
+            const scoreCell = row.insertCell(2);
+            const timeCell = row.insertCell(3);
+
+            rankCell.textContent = index + 1;
+            usernameCell.textContent = user.username;
+            scoreCell.textContent = user.score;
+            timeCell.textContent = user.completionTime;
+
+            if (index === 0) {
+                row.classList.add('gold');
+            } else if (index === 1) {
+                row.classList.add('silver');
+            } else if (index === 2) {
+                row.classList.add('bronze');
+            }
+        });
+
+        function goBack() {
+            window.location.href = 'user.html';
+        }
+    </script>
+</body>
+</html>

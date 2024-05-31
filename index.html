@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOOC FTI UNSAP QUIZ COURSE</title>
+    <link rel="icon" type="image/jpeg" href="gambar/8.jpg">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            text-align: center;
+            display: flex;
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh;
+        }
+        h1 {
+            color: #333;
+        }
+        #play-button1 {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        #play-button2 {
+            background-color: #00c54c;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+  <div class="center">
+    <h1>Selamat Datang di MOOC FTI UNSAP QUIZ COURSE!</h1>
+    <p>Bersiaplah untuk menjelajahi kuis dan tantangan menarik.</p>
+    <button id="play-button1">Bermain Sebagai Peserta</button>
+    <button id="play-button2">Login Sebagai Instruktur</button>
+  </div>
+    <script>
+        const playButton1 = document.getElementById('play-button1');
+        playButton1.addEventListener('click', () => {
+            window.location.href = 'loginUser.html'; 
+        });
+        const playButton2 = document.getElementById('play-button2');
+        playButton2.addEventListener('click', () => {
+            window.location.href = 'loginInstruktur.html'; 
+        });
+    </script>
+</body>
+</html>

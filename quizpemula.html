@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Course Level Pemula</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: #333;
+        }
+
+        .question {
+            margin: 20px 0;
+        }
+
+        .question img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px 0;
+        }
+
+        .options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .options li {
+            margin: 10px 0;
+        }
+
+        .options button {
+            padding: 10px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s;
+        }
+
+        .options button.correct {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .options button.wrong {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .progress {
+            margin: 20px 0;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: #007bff;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .timer {
+            font-size: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        #score {
+            text-align: center;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .buttons button:hover {
+            opacity: 0.8;
+        }
+
+        #viewHighscore {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #claimAchievement {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #nextLevel {
+            background-color: #ffc107;
+            color: white;
+        }
+
+        #restartLevel {
+            background-color: #ffc107;
+            color: white;
+        }
+
+        #logout {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .audio-controls {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .audio-controls img {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        #leaderboard {
+            display: none;
+            text-align: center;
+        }
+
+        .leaderboard-item {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .gold {
+            background-color: gold;
+        }
+
+        .silver {
+            background-color: silver;
+        }
+
+        .bronze {
+            background-color: #cd7f32;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz Course: Level Pemula</h1>
+        <div id="quizContainer">
+            <div id="questionContainer">
+                <!-- Pertanyaan -->
+            </div>
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="timer" id="timer">Time: 10</div>
+            <div class="audio-controls">
+                <img id="muteButton" src="gambar/mute.png" alt="Mute/Unmute">
+            </div>
+        </div>
+        <div id="scoreContainer" style="display:none;">
+            <h2>Quiz selesai!</h2>
+            <p id="score"></p>
+            <div class="buttons">
+                <button id="viewHighscore">Lihat Klasemen</button>
+                <button id="claimAchievement">Klaim Lencana</button>
+                <button id="nextLevel">Level Selanjutnya</button>
+                <button id="restartLevel">Ulangi Level</button>
+                <button id="logout">Logout</button>
+            </div>
+        </div>
+        <audio id="backgroundMusic" src="music/backsong.mp3" loop></audio>
+        <audio id="correctSound" src="music/correct.mp3"></audio>
+        <audio id="wrongSound" src="music/wrong.mp3"></audio>
+        <audio id="timerSound" src="music/timer.mp3"></audio>
+        <audio id="winMusic" src="music/victory.mp3"></audio>
+        <audio id="loseMusic" src="music/lose.mp3"></audio>
+        <script>
+            const questions = JSON.parse(localStorage.getItem('savedQuestions')) || [];
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let timer;
+            let startTime;
+            const questionContainer = document.getElementById('questionContainer');
+            const progressBar = document.getElementById('progressBar');
+            const timerElement = document.getElementById('timer');
+            const scoreContainer = document.getElementById('scoreContainer');
+            const scoreElement = document.getElementById('score');
+            const username = localStorage.getItem('username') || 'User';
+            const backgroundMusic = document.getElementById('backgroundMusic');
+            const correctSound = document.getElementById('correctSound');
+            const wrongSound = document.getElementById('wrongSound');
+            const timerSound = document.getElementById('timerSound');
+            const winMusic = document.getElementById('winMusic');
+            const loseMusic = document.getElementById('loseMusic');
+            const muteButton = document.getElementById('muteButton');
+            const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
+            let isMuted = false;
+
+            function startQuiz() {
+                if (questions.length === 0) {
+                    alert('Tidak ada pertanyaan yang tersedia. Silahkan hubungi instruktur');
+                    return;
+                }
+                backgroundMusic.volume = 0.4;
+                backgroundMusic.play().catch(error => {
+                    console.log('Autoplay was prevented, user interaction needed to start audio');
+                });
+                startTime = new Date().getTime();
+                showQuestion(questions[currentQuestionIndex]);
+                startTimer();
+            }
+
+            function showQuestion(question) {
+                questionContainer.innerHTML = `
+                    <div class="question">
+                        <h3>Question ${question.questionNumber}</h3>
+                        <p>${question.questionText}</p>
+                        ${question.imageUrl ? `<img src="${question.imageUrl}" alt="Question Image">` : ''}
+                    </div>
+                    <ul class="options">
+                        ${Object.keys(question.options).map(key => `
+                            <li><button onclick="selectAnswer('${key}')">${key}: ${question.options[key]}</button></li>
+                        `).join('')}
+                    </ul>
+                `;
+            }
+
+            function selectAnswer(selectedOption) {
+                const question = questions[currentQuestionIndex];
+                const buttons = document.querySelectorAll('.options button');
+                buttons.forEach(button => {
+                    button.disabled = true;
+                    if (button.textContent.startsWith(question.correctOption)) {
+                        button.classList.add('correct');
+                    } else if (button.textContent.startsWith(selectedOption)) {
+                        button.classList.add('wrong');
+                    }
+                });
+                if (selectedOption === question.correctOption) {
+                    score += 10;
+                    correctSound.play();
+                } else {
+                    wrongSound.play();
+                }
+                timerSound.pause();
+                timerSound.currentTime = 0;
+                currentQuestionIndex++;
+                updateProgressBar();
+                setTimeout(() => {
+                    if (currentQuestionIndex < questions.length) {
+                        showQuestion(questions[currentQuestionIndex]);
+                        resetTimer();
+                    } else {
+                        endQuiz();
+                    }
+                }, 1000);
+            }
+
+            function updateProgressBar() {
+                const progressPercentage = ((currentQuestionIndex / questions.length) * 100) + '%';
+                progressBar.style.width = progressPercentage;
+            }
+
+            function startTimer() {
+                let timeLeft = 10;
+                timerElement.textContent = `Time: ${timeLeft}`;
+                timer = setInterval(() => {
+                    timeLeft--;
+                    timerElement.textContent = `Time: ${timeLeft}`;
+                    if (timeLeft === 5) {
+                        timerSound.play();
+                    }
+                    if (timeLeft <= 0) {
+                        clearInterval(timer);
+                        currentQuestionIndex++;
+                        updateProgressBar();
+                        if (currentQuestionIndex < questions.length) {
+                            showQuestion(questions[currentQuestionIndex]);
+                            resetTimer();
+                        } else {
+                            endQuiz();
+                        }
+                    }
+                }, 1000);
+            }
+
+            function resetTimer() {
+                clearInterval(timer);
+                startTimer();
+            }
+
+            function endQuiz() {
+                clearInterval(timer);
+                backgroundMusic.pause();
+                timerSound.pause();
+                timerSound.currentTime = 0;
+                questionContainer.style.display = 'none';
+                progressBar.style.display = 'none';
+                timerElement.style.display = 'none';
+                scoreContainer.style.display = 'block';
+                const completionTime = (new Date().getTime() - startTime) / 1000; // in seconds
+                const userScore = { username, score, completionTime };
+                leaderboard.push(userScore);
+                localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+                scoreElement.textContent = `${username}, kamu mendapatkan skor : ${score}`;
+                if (score <= 20) {
+                    loseMusic.play();
+                    document.getElementById('viewHighscore').style.display = 'none';
+                    document.getElementById('claimAchievement').style.display = 'none';
+                    document.getElementById('nextLevel').style.display = 'none';
+                } else {
+                    winMusic.play();
+                    document.getElementById('restartLevel').style.display = 'none';
+                }
+            }
+
+            function showLeaderboard() {
+                const leaderboardContainer = document.getElementById('leaderboardContainer');
+                leaderboardContainer.innerHTML = '';
+                leaderboard.sort((a, b) => b.score - a.score || a.completionTime - b.completionTime);
+                leaderboard.forEach((user, index) => {
+                    const rankClass = index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '';
+                    leaderboardContainer.innerHTML += `
+                        <div class="leaderboard-item ${rankClass}">
+                            <p>Rank ${index + 1}: ${user.username} - Score: ${user.score} - Time: ${user.completionTime}s</p>
+                        </div>
+                    `;
+                });
+                scoreContainer.style.display = 'none';
+                document.getElementById('leaderboard').style.display = 'block';
+            }
+
+            muteButton.addEventListener('click', () => {
+                isMuted = !isMuted;
+                backgroundMusic.muted = isMuted;
+                correctSound.muted = isMuted;
+                wrongSound.muted = isMuted;
+                timerSound.muted = isMuted;
+                winMusic.muted = isMuted;
+                loseMusic.muted = isMuted;
+                muteButton.src = isMuted ? 'gambar/unmute.png' : 'gambar/mute.png';
+            });
+
+            document.getElementById('viewHighscore').addEventListener('click', () => {
+                window.location.href = 'klasemen.html';
+            });
+
+            document.getElementById('claimAchievement').addEventListener('click', () => {
+                window.location.href = 'lencana.html';
+            });
+
+            document.getElementById('nextLevel').addEventListener('click', () => {
+                window.location.href = 'user.html';
+            });
+
+            document.getElementById('restartLevel').addEventListener('click', () => {
+                window.location.reload();
+            });
+
+            document.getElementById('logout').addEventListener('click', () => {
+                localStorage.removeItem('username');
+                window.location.href = 'index.html';
+            });
+
+            window.onload = startQuiz;
+        </script>
+    </div>
+</body>
+</html>

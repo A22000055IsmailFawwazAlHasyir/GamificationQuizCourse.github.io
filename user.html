@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pilih Level Quiz Course</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center; 
+        height: 100vh; 
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+
+    p {
+        margin-top: 20px;
+        text-align: center;
+        font-size: 18px;
+        color: #555;
+    }
+    button {
+        margin: 5px;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        color: #fff;
+    }
+    #play-button1 { background-color: #007bff; }
+    #play-button2 { background-color: #00c54c; }
+    #play-button3 { background-color: #8c00ff; }
+    #play-button4 { background-color: #c50000; }
+    .locked { background-color: #cccccc; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Silahkan Pilih Level quiz</h1>
+  <p id="username-display"></p>
+  <button id="play-button1">Level Pemula</button>
+  <button id="play-button2">Level Menengah</button>
+  <button id="play-button3">Level Tinggi</button>
+  <button id="play-button4">Level Master</button>
+</div>
+<script>
+
+    const username = localStorage.getItem('username');
+    document.getElementById('username-display').innerText = `Hello, ${username}. Mari Bermain!!`;
+
+    function updateButtonStates() {
+        const level1Completed = localStorage.getItem('level1Completed') === 'true';
+
+        if (!level1Completed) {
+            document.getElementById('play-button2').classList.add('locked');
+            document.getElementById('play-button3').classList.add('locked');
+            document.getElementById('play-button4').classList.add('locked');
+        } else {
+            document.getElementById('play-button2').classList.remove('locked');
+            document.getElementById('play-button3').classList.remove('locked');
+            document.getElementById('play-button4').classList.remove('locked');
+        }
+    }
+
+    const playButton1 = document.getElementById('play-button1');
+    playButton1.addEventListener('click', () => {
+        window.location.href = 'quizpemula.html'; 
+    });
+
+    const playButton2 = document.getElementById('play-button2');
+    playButton2.addEventListener('click', () => {
+        if (localStorage.getItem('level1Completed') === 'true') {
+            window.location.href = 'course2.html'; 
+            alert('Selesaikan level pemula terlebih dahulu!');
+        }
+    });
+
+    const playButton3 = document.getElementById('play-button3');
+    playButton3.addEventListener('click', () => {
+        if (localStorage.getItem('level1Completed') === 'true') {
+            window.location.href = 'course3.html'; 
+        } else {
+            alert('Selesaikan level pemula terlebih dahulu!');
+        }
+    });
+
+    const playButton4 = document.getElementById('play-button4');
+    playButton4.addEventListener('click', () => {
+        if (localStorage.getItem('level1Completed') === 'true') {
+            window.location.href = 'course4.html'; 
+        } else {
+            alert('Selesaikan level pemula terlebih dahulu!');
+        }
+    });
+
+    updateButtonStates();
+</script>
+</body>
+</html>
